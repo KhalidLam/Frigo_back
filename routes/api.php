@@ -24,8 +24,13 @@ Route::post('register', 'API\UserController@register');
 
 
 Route::group(['middleware' => 'auth:api'], function(){
-Route::post('details', 'API\UserController@details');
+    Route::get('details', 'API\UserController@details');
+    // Route::apiresource('products','ProductController');
+ 
 });
+
+// Route::get('products', 'ProductController@index');
+Route::post('product', 'ProductController@store');
 
 
 Route::get('recettes', 'RecettesController@index');
@@ -37,10 +42,11 @@ Route::delete('recette/{id}', 'RecettesController@destroy');
 
 
 
-Route::get('produits', 'ProduitController@index');
+// Route::get('products', 'ProductController@index');
 
-Route::post('produit','ProduitController@store');
-Route::put('produit/{id}', 'ProduitController@update');
-Route::delete('produit/{id}', 'ProduitController@destroy');
+// Route::post('product','ProduitController@store');
+
+// Route::put('produit/{id}', 'ProduitController@update');
+// Route::delete('produit/{id}', 'ProduitController@destroy');
 
 

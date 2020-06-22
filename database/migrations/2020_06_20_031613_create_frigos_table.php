@@ -15,7 +15,15 @@ class CreateFrigosTable extends Migration
     {
         Schema::create('frigos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            
+
+            $table->string('name')->nullable();
+
+            $table->unsignedBigInteger('user_id') ;
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+                
             $table->timestamps();
         });
     }

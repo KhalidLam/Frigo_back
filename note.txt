@@ -7,4 +7,4 @@ Password grant client created successfully.
 Client ID: 2
 Client secret: 2J4Gz14LaR4wQxIOBpIjTO70pXKiruls4YePYXPn
 
-php -S localhost:8000 -t public
+php -S localhost:1000 -t public

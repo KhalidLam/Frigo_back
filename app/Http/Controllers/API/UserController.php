@@ -44,6 +44,13 @@ if ($validator->fails()) {
 $input = $request->all(); 
         $input['password'] = bcrypt($input['password']); 
         $user = User::create($input); 
+        
+        //la creation du frigo automatic
+        $frigo = $user->frigos()->create([
+
+            'name'=> $user->name,
+        
+           ]);
         $success['token'] =  $user->createToken('MyApp')-> accessToken; 
         $success['name'] =  $user->name;
 return response()->json(['success'=>$success], $this-> successStatus); 
