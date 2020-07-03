@@ -53,4 +53,14 @@ class UploadController extends Controller
 
         return response()->json($photos, 200);
     }
+
+
+    public function storeImage(Request $request){
+
+        $file = $request->file('photo');
+        $fileName = "frigo.jpg" ;
+        $request->file('photo')->move(public_path("/img/"), $fileName ) ;
+        $photoURL = url('/img/'.$fileName) ;
+        return response()->json(['url'=> $photoURL],200) ;
+    }
 }

@@ -37,7 +37,7 @@ class User extends \TCG\Voyager\Models\User
         'email_verified_at' => 'datetime',
     ];
 
-    public function frigos()
+    public function frigo()
     {
         return $this->hasOne('App\Frigo');
     }

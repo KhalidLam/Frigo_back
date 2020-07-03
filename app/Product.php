@@ -17,7 +17,17 @@ class Product extends Model
 
     public function frigos()
     {
-      return $this->belongsToMany(Frigo::class);
+      return $this->belongsToMany(Frigo::class ) ;
+
+      // ->withPivot('stock')     
+      // ->withTimestamps();
+ 
     }
+    
+
+    public function recettes()
+    {
+      return $this->belongsToMany('App\Recette');
+    } 
 
 }

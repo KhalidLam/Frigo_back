@@ -29,7 +29,7 @@ class CreateProductFrigoTable extends Migration
                     ->on('frigos')
                     ->onDelete('cascade');
 
-            $table->string('stock')->default(0);
+            // $table->string('stock')->default(1);
             $table->timestamps();
         });
     }

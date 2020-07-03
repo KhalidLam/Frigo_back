@@ -11,7 +11,9 @@ class CategoryTableSeeder extends Seeder
      * @return void
      */
     public function run()
-    {  Category ::create([
+    { 
+        
+        Category ::create([
 
         'name' => 'Fruit and vegetables',
       

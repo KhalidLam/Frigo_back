@@ -11,49 +11,81 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
+
         return response()->json(['success' => $products], 200);
+
     }
-    
-    public function store(Request $request)
+
+
+
+    public function get( )
     {
+        $product = Product::findOrFail(2) ;
+
+        $frigo = Frigo::findOrFail(2);
+
+      dd( $frigo->products->find(2) ) ;
+        // $product->frigos->find(5)->pivot->stock 
+        // $frigo->products->first()->name ; /// tomate
+       
+        // $arr = [];
+        // $i = 0;
+        // foreach ($products as $product) {
+        //  $arr= $product->name ;
+        //     echo '  '. $product->name  ;
+        // };
+        // $category = Product::with('categories') ;
         
+        // return response()->json(['success' => $products], 200)  ;
+        // $frigo = Frigo::find(2);
+        // dd($frigo->products->find(3));
+        // $frigo->products()->first()->name ; /// tomate
+
+    }
+
+
+
+    public function storeProductsFrigo(Request $request)
+    {
+
         $product_id = $request->get('product_id');
         $product =  Product::find($product_id);
-        // Product::find(3);
-        // dd($product) ;
+
         $frigo_id = $request->get('frigo_id');
-        // dd($product_id) ;
         $frigo = Frigo::find($frigo_id);
-        $stock = $request->get('stock');
-        $frigo->products()->attach($product->id , [ 'stock' => $stock]);
-        // $product->name ='fgossa' ;
-        // $product->category_id =1 ;
-        // $product->frigos()->attach($frigo->id);
 
+        //  $stock =  $product->frigos()->first()->pivot->stock  ;
 
-        if ($product) {
-        if ($frigo) {
-        
-               
-                return response()->json(['success' => [$product , $frigo]], 200);
-            } else {
-                // dd($product_id) ;
-                return response()->json(['error' => [$frigo, $product]], 401);
-            }
+        $qty_request = $request->get('quantity');
+        $type = $request->get('type');
+
+        if ($frigo->products->find($product_id) == null) {
+         $frigo->products()->attach($product->id, ['quantity' =>  $qty_request , 'type' => $type]);
+
+        } else {
+
+            $pivot = $frigo->products->find($product_id)->pivot;
+
+            $pivot->quantity +=  $qty_request ;
+
+            $pivot->save();
         }
 
-
-
-
-        // $frigo = Frigo::create($request->all()) ;
-        // $frigo = new Frigo() ;
-        // $frigo->products()->attach($request);
-        // auth()->user()->frigos()->create([
-        //     // 'name' => $request 
-        // ]) ;
-        // $frigo->save();
-        // return ($frigo);
+        return response()->json(['success' => [$frigo, $product]], 200);
     }
+
+
+
+
+    // $frigo = Frigo::create($request->all()) ;
+    // $frigo = new Frigo() ;
+    // $frigo->products()->attach($request);
+    // auth()->user()->frigos()->create([
+    //     // 'name' => $request 
+    // ]) ;
+    // $frigo->save();
+    // return ($frigo);
+    // }
 
 
 

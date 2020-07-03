@@ -1,10 +1,18 @@
 $' php artisan passport:install'
-Encryption keys generated successfully.
-Personal access client created successfully.
-Client ID: 1
-Client secret: zAxWeZUvKm9UQRmwb6yCkp9frw0Gk7EPRCz5x6Dr
-Password grant client created successfully.
-Client ID: 2
-Client secret: 2J4Gz14LaR4wQxIOBpIjTO70pXKiruls4YePYXPn
 
+
+'php artisan voyager:install'
+'php artisan voyager:admin your@email.com --create'
+'php artisan migrate'
+composer dump-autoload 
+'php artisan db:seed --
+'class=VoyagerDatabaseSeeder'
+'composer dump-autoload'
 php -S localhost:1000 -t public
+
+### migration if u edit somthing 
+'php artisan migrate:rollback'
+
+'php artisan migrate '
+
+'php artisan passport:install'

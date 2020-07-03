@@ -18,19 +18,43 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+Route::get('/user', function(Request $request) {
+    return Auth::user();
+})->middleware('auth:api') ;
 
+ 
 Route::post('login', 'API\UserController@login');
 Route::post('register', 'API\UserController@register');
 
-
 Route::group(['middleware' => 'auth:api'], function(){
     Route::get('details', 'API\UserController@details');
-    // Route::apiresource('products','ProductController');
- 
-});
+   
 
-// Route::get('products', 'ProductController@index');
-Route::post('product', 'ProductController@store');
+});
+//get tt les produit et les poster
+Route::get('product', 'ProductController@index');
+
+Route::post('product', 'ProductController@storeProductsFrigo');
+
+
+
+//tst
+Route::get('get', 'ProductController@get');
+
+// les produits du frigo 
+Route::get('frigo', 'FrigoController@index');
+
+Route::post('frigo/photo' , 'FrigoController@storeImage');
+Route::get('frigo/photo' , 'FrigoController@getImage');
+
+Route::delete('frigo' , 'FrigoController@destroy');
+
+
+
+Route::post('recette/photo','UploadController@uploadPhoto');
+
+// Route::post('recette/photo','UploadController@uploadPhoto');
+
 
 
 Route::get('recettes', 'RecettesController@index');

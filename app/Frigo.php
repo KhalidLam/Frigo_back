@@ -13,10 +13,13 @@ class Frigo extends Model
     ];
     public function products()
     {
-        return $this->belongsToMany(Product::class,  'product_frigo', 'frigo_id', 'product_id');
+
+        return $this->belongsToMany(Product::class,  'product_frigo', 'frigo_id' , 'product_id')
+        ->withPivot('quantity','type')
+    	->withTimestamps();
     }
 
-    public function  users()
+    public function  user()
     {
         return $this->belongsTo('App\User');
     }
