@@ -8,6 +8,6 @@ class Categoryrecette extends Model
 {
     public function recettes()
     {
-        return $this->hasMany('App\Recette');
+        return $this->hasMany('App\Recette',  'category_id');
     }
 }

@@ -36,11 +36,33 @@ class User extends \TCG\Voyager\Models\User
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    // to create profile with user we can use function boot or create it in   regisrtercontroller   
+    protected static function boot() {
+        parent::boot() ; 
+        static::created(function($user){
+         $data = $user->profile()->create([
+                'prenom'=> $user->name ,
+      'description' =>'description'.$user1-> email
+            ]);
+        }); }
 
     public function frigo()
     {
         return $this->hasOne('App\Frigo');
     }
  
-
+    public function liste()
+    {
+        return $this->belongsTo('App\Liste');
+    }
+    
+    public function recettes(){
+        return $this->hasMany('App\Recette');
+    
+      }
+ 
+      public function profile()
+      {
+          return $this->hasOne('App\Profile');
+      }
 }

@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+
+use App\Categoryrecette;
 use App\Frigo;
 use App\Product;
 use App\Recette;
+use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class RecettesController extends Controller
 {
@@ -14,14 +20,69 @@ class RecettesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+
+    public function index()
     {
+        $Recettes  = Recette::latest()->get();
+        $Recipes = [];
+        foreach ($Recettes as $recette) {
+            $user_id = $recette->user_id;
+            $user = User::find($user_id); 
+            array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name]);
+     
+        }
+        return response()->json(['success' => $Recipes    ], 200);
+    }
+    public function getCat()
+    {
+        $Categories = Categoryrecette::all();
+        $Categories_id = [];
+
+        foreach ($Categories as $Category) {
+            $Category_id = $Category->id;
+            $Category_name = $Category->name;
+            array_push($Categories_id, ['category_id' =>  $Category_id,  'category_name' => $Category_name]);
+        }
+        $CategoryRecettes = [];
+        $i = 0;
+
+        foreach ($Categories_id  as $Category) {
+            $Category_id = $Category['category_id'];
+            $Category_name =  $Category['category_name'];
+            $Recette  = Recette::all()->where('category_id',  $Category_id);;
+
+            array_push($CategoryRecettes, ['category_id' =>  $Category_id, 'category_name' => $Category_name, 'Recettes' =>  $Recette]);
+            $i++;
+        }
+        return response()->json(['categories' => $Categories, 'CategoryRecettes' => $CategoryRecettes], 200);
+        // return $CategoryRecette ;
+    }
+
+    public function myRecipes($user_id)
+    {
+
+        $Recettes  = Recette::where('user_id',  $user_id)->get();
+      
+        $Recipes = [];
+        foreach ($Recettes as $recette) {
+           $user = User::find($user_id);
+       
+        array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name]);
+     
+    }
+    return response()->json(['success' => $Recipes    ], 200);
+    }
+    
+    public function FilterRecette($frigo_id)
+    {
+
         $Recettes = Recette::all();
         $TableRecettes = [];
 
         foreach ($Recettes as $Recette) {
             // $Recette= Recette::first() ;
             $AllProductRecette = $Recette->products->all();
+
             $ProductIdRecette = [];
             foreach ($AllProductRecette as $product) {
 
@@ -29,17 +90,15 @@ class RecettesController extends Controller
                 // => $product->name]);
             }
             //  print_r ( $ProductIdRecette ) ;
-
+            //    return  $ProductIdRecette ;
             array_push($TableRecettes, ['recette_id' => $Recette->id, 'products_id' => $ProductIdRecette]);
         }
         // return response()->json( $ProductIdRecette );
-        $frigo_id = $request->get('frigo_id');
         $frigo = Frigo::findOrFail($frigo_id);
         $AllProductFrigo =    $frigo->products->all();
         $ProductIdFrigo = [];
         foreach ($AllProductFrigo as $product) {
             array_push($ProductIdFrigo, $product->pivot->product_id);
-            // => $product->name ]);
         }
         // return     $ProductIdFrigo;
         // var_dump($ProductIdFrigo);
@@ -52,11 +111,8 @@ class RecettesController extends Controller
                 $key = array_search($TableRecettes[$i]['products_id'][$j], $ProductIdFrigo);
                 if ($key !== false) {
                     array_push($ProductExist, $TableRecettes[$i]['products_id'][$j]);
-                    // array_push(  $FilterRecette['ProductExist'],  $TableRecettes[$i]['products_id'][$j]   );
                 } else {
                     array_push($ProductDontExist, $TableRecettes[$i]['products_id'][$j]);
-                    // array_push(  $FilterRecette['ProductDontExist'],  $TableRecettes[$i]['products_id'][$j]   );
-                    // array_push($table,  $key);
                 }
             }
             array_push(
@@ -74,13 +130,11 @@ class RecettesController extends Controller
         $RecettesId = [];
         $ProductName = [];
         for ($i = 0; $i < count($FilterRecette); $i++) {
-
             $ProductDontExist = $FilterRecette[$i]['ProductDontExist'];
             $Recette_id = $FilterRecette[$i]['recette_id'];
 
             if (count($ProductDontExist) <= 5) {
                 for ($j = 0; $j < count($ProductDontExist); $j++) {
-
                     $product_id = $ProductDontExist[$j];
                     $product_name = Product::find($product_id)->name;
                     array_push($ProductName,  $product_name);
@@ -95,20 +149,117 @@ class RecettesController extends Controller
                 $ProductName = [];
             }
         }
-
-        return response()->json(['success' =>  $RecettesId], 200);
+        $RecipesFilter = [];
+        foreach ($RecettesId as $recette) {
+            $recette_id =  $recette['recette_id'];
+            $Recette = Recette::find($recette_id);
+            $user_id = $Recette->user_id;
+            $user = User::find($user_id);
+            array_push($RecipesFilter, [
+                'recette' => $Recette, 'userName' => $user->name, 'ProductNameDontExist' =>  $recette['ProductNameDontExist']
+            ]);
+        }
+        return response()->json(['success' => $RecipesFilter], 200);
     }
+
+
+    public function show($id)
+    {
+        $recette  = Recette::find($id);
+        // $products  = [] ;
+        $recette->products->all();
+        $description = $recette->description;
+        // dd($description) ;
+        $Posistion = [];
+        $Etapes = [];
+
+        for ($i = 1; $i < 4; $i++) {
+            $pos =   strpos($description,  "Etape {$i}");
+            if ($pos !== false) {
+                array_push($Posistion, $pos);
+            }
+            // dd($pos) ;
+        }
+        // return ($Posistion) ;
+        if (isset($Posistion[0]) && isset($Posistion[1])) {
+            $Etape1 = substr($description, $Posistion[0] + 7, $Posistion[1] -  $Posistion[0] - 7);
+        } elseif (isset($Posistion[0])) {
+            $Etape1 = substr($description, $Posistion[0] + 7);
+        } else {
+            $Etape1 = '';
+        }
+        if (isset($Posistion[1]) &&  isset($Posistion[2])) {
+            $Etape2 = substr($description, $Posistion[1] + 7, $Posistion[2] -  $Posistion[1] - 7);
+        } elseif (isset($Posistion[1])) {
+            $Etape2 = substr($description, $Posistion[1] + 7);
+        } else {
+            $Etape2 = '';
+        }
+        if (isset($Posistion[2])) {
+            $Etape3 = substr($description, $Posistion[2] + 7);
+        } else {
+            $Etape3 = '';
+        }
+
+        $Etapes = [
+            'Etape1' => $Etape1,
+            'Etape2' =>  $Etape2,
+            'Etape3' => $Etape3
+        ];
+
+        $user_id = $recette->user_id;
+        $user = User::find($user_id);
+        $UserName = $user->name;
+        return [$recette, $Etapes, $UserName];
+        // return response()->json(['success' =>  $recette , 'Etapes' => $Etapes ] , 200 );
+    }
+    // 
 
 
     public function store(Request $request)
     {
-        return Recette::create($request->all());
+
+        $recette_name = $request->get('name');
+        $description = $request->get('description');
+        $number = $request->get('number');
+        $time = $request->get('time');
+        $category_id = $request->get('category_id');
+        $user_id = $request->get('user_id');
+
+
+        $category = Categoryrecette::findOrFail($category_id);
+
+        $file = $request->file('image');
+        $ext = $file->extension();
+        $fileName = Carbon::now()->format('d-m-Y') . '-' . Str::random(10) . '.' . $ext;
+        $request->file('image')->move(public_path("/img/"), $fileName);
+        // return('tst') ;
+        // dd(Auth::user());
+        // $recette =      Recette::create([
+        $recette = new Recette([
+            // ' number_person' => $number,
+            'name' => $recette_name,
+            'description' =>  $description,
+            'image' => 'img/' . $fileName,
+            'cook_time' => $time,
+            'number_person' => $number,
+            'category_id' =>    $category_id,
+            'user_id' => Auth::user()->id
+        ]);
+        // $recette =  Recette::create($request->all());
+
+        $category->recettes()->save($recette);
+        // ]) ;
+        // return auth()->guard('api')->user();
+
+        return [$recette];
     }
 
-    public function show($id)
-    {
-        return Recette::find($id);
-    }
+    //     public function show(Request $request ){
+    // $recette_id = $request->get('recette_id');
+    // $recette = Recette::find($recette_id );
+    //         return $recette ;
+    //     }
 
 
 
@@ -116,21 +267,29 @@ class RecettesController extends Controller
     {
         $recette = Recette::findOrFail($id);
         $recette->update($request->all());
-
         return $recette;
     }
 
 
-    public function destroy($id)
-    {
-        $recette = Recette::findOrFail($id);
-        $recette->delete();
 
-        return 204;
+    public function search(Request $request)
+    {
+        $q = $request->get('word');
+        $Recettes = Recette::where('name', 'LIKE', '%' . $q . '%')
+            ->orWhere('description', 'LIKE', '%' . $q . '%')->get();
+        $Recipes = [];
+        foreach ($Recettes as $recette) {
+            $user_id = $recette->user_id;
+            $user = User::find($user_id);
+
+            // array_push($Recipes, ['id' => $recette->id, 'userName' => $user->name, 'recipeName' =>  $recette->name, 'person' => $recette->number_person, 'image' => $recette->image]);
+            array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name]);
+     
+        }
+        return response()->json(['success' => $Recipes    ], 200);
+    
     }
 }
-
-
 
 
 

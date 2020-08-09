@@ -14,12 +14,19 @@ class CreateRecettesTable extends Migration
     public function up()
     {
         Schema::create('recettes', function (Blueprint $table) {
-
             $table->bigIncrements('id');
+
             $table->string('name');
             $table->text('description');
+            $table->text('image');
             $table->string('cook_time');
-            $table->string('image');
+            $table->unsignedBigInteger('number_person')->default(4);
+
+            $table->unsignedBigInteger('category_id') ;
+            $table->foreign('category_id')
+                ->references('id')
+                ->on('categoryrecettes')
+                ->onDelete('cascade');
 
             $table->timestamps();
         });
