@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Categoryrecette;
+use App\Comment;
 use App\Frigo;
 use App\Product;
 use App\Recette;
@@ -23,12 +24,20 @@ class RecettesController extends Controller
 
     public function index()
     {
+         
         $Recettes  = Recette::latest()->get();
         $Recipes = [];
+        
         foreach ($Recettes as $recette) {
             $user_id = $recette->user_id;
             $user = User::find($user_id); 
-            array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name]);
+            $comments= Comment::where('recette_id' , $recette->id )->get() ;
+            $rating = 0 ;
+           foreach ($comments as $comment) {
+              $rating += $comment->rating  ; 
+           }
+           $rating =  $rating /count( $comments) ;
+            array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name , 'rating' =>  $rating]);
      
         }
         return response()->json(['success' => $Recipes    ], 200);
@@ -66,8 +75,13 @@ class RecettesController extends Controller
         $Recipes = [];
         foreach ($Recettes as $recette) {
            $user = User::find($user_id);
-       
-        array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name]);
+           $comments= Comment::where('recette_id' , $recette->id )->get() ;
+           $rating = 0 ;
+          foreach ($comments as $comment) {
+             $rating += $comment->rating  ; 
+          }
+          $rating =  $rating /count( $comments) ;
+        array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name , 'rating' =>  $rating]);
      
     }
     return response()->json(['success' => $Recipes    ], 200);
@@ -153,10 +167,18 @@ class RecettesController extends Controller
         foreach ($RecettesId as $recette) {
             $recette_id =  $recette['recette_id'];
             $Recette = Recette::find($recette_id);
+            
             $user_id = $Recette->user_id;
             $user = User::find($user_id);
+            $comments= Comment::where('recette_id' ,  $recette_id)->get() ;
+            $rating = 0 ;
+           foreach ($comments as $comment) {
+              $rating += $comment->rating  ; 
+           }
+           $rating =  $rating /count( $comments) ;
             array_push($RecipesFilter, [
-                'recette' => $Recette, 'userName' => $user->name, 'ProductNameDontExist' =>  $recette['ProductNameDontExist']
+                'recette' => $Recette, 'userName' => $user->name, 'rating' =>  $rating ,
+                'ProductNameDontExist' =>  $recette['ProductNameDontExist']
             ]);
         }
         return response()->json(['success' => $RecipesFilter], 200);

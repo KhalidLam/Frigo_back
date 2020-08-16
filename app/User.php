@@ -42,7 +42,7 @@ class User extends \TCG\Voyager\Models\User
         static::created(function($user){
          $data = $user->profile()->create([
                 'prenom'=> $user->name ,
-      'description' =>'description'.$user1-> email
+        //   '' =>$user-> email
             ]);
         }); }
 

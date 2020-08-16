@@ -16,3 +16,6 @@ php -S localhost:1000 -t public
 'php artisan migrate '
 
 'php artisan passport:install'
+
+# //after edit env
+php artisan config:cache

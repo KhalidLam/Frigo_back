@@ -22,8 +22,15 @@ class CommentController extends Controller
       $commentaires = [];
       foreach ($comments as $comment ) {
         $user =  User::find($comment->user_id) ;
-      array_push($commentaires, [ 'id' =>   $comment->id ,
-       'comment' => $comment->comment,'rating' => $comment->rating , 'user_id' =>  $user->id ,'name' =>  $user->name , 'date' => $comment->created_at->diffForHumans()]);
+
+      array_push($commentaires,
+       [ 'id' =>   $comment->id ,
+       'comment' => $comment->comment,
+       'rating' => $comment->rating , 
+       'user_id' =>  $user->id ,
+       'avatar' => $user->avatar ,
+       'name' =>  $user->name ,
+       'date' => $comment->created_at->diffForHumans()]);
       }
       return  $commentaires  ;
    }
@@ -76,16 +83,14 @@ class CommentController extends Controller
 
     
     public function update(Request $request, $id)
-    {
-        $comment = Comment::findOrFail($id);
-
+    {   
+        $comment = Comment::findOrFail($id); 
      $comment->comment = $request->get('comment');
-        return $request->get('comment') ;
-
-
-        $comment->update($request->all());
-
+   $request->get('comment') ; 
+       $comment->update($request->all());
+     return $comment ;
     }
+ 
 
     public function destroy($id)
     {

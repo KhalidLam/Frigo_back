@@ -28,13 +28,15 @@ Route::post('register', 'API\UserController@register');
 
     Route::group(['middleware' => 'auth:api'], function () {
     Route::get('details', 'API\UserController@details');
-    Route::post('profile', 'API\UserController@update');
-    Route::post('User/{id}', 'API\UserController@profile');
+    Route::post('avatar', 'API\UserController@EditAvatar');
+    Route::post('profile', 'API\UserController@profile');
    
     //liste 
     Route::post('liste', 'ListeController@store');
     Route::get('liste/{user_id}', 'ListeController@index');
     Route::post('liste/frigo', 'ListeController@storeListeToFrigo');
+    Route::delete('liste/', 'ListeController@destroy');
+
     //comments
     Route::get('comment/{id}', 'CommentController@index');
     Route::post('comment/{id}', 'CommentController@store');

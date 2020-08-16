@@ -15,9 +15,16 @@ $recettes_id = $request->get('recettes_id') ;
 foreach (json_decode($recettes_id)as $item) {
 
 $recette = Recette::find($item) ;
-$user_id = $recette->user_id;
+$user_id = $recette->user_id; 
 $user = User::find($user_id); 
-array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name]);
+
+// $comments= Comment::where('recette_id' , $item)->get() ;
+// $rating = 0 ;
+// foreach ($comments as $comment) {
+//   $rating += $comment->rating  ; 
+// }
+// $rating =  $rating /count( $comments) ;
+array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name ,'rating' =>  '$rating ' ]);
 
 }
 return response()->json(['success' => $Recipes    ], 200);

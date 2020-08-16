@@ -94,30 +94,36 @@ class UserController extends Controller
         $user = Auth::user();
     }
 
+    
+    public function EditAvatar(Request $request  ){
 
-    public function profile(Request $request, $id){
-    // $user = User::find($id) ;
-    $user = User::with('profile')->find($id) ;
-
-//   return ($user)  ;
-     $file = $request->file('image');
-     //    dd($file );
+        $user = User::find(Auth()->user()->id) ;
+        $file = $request->file('image');
+        
          $ext = $file->extension();
          $fileName = Carbon::now()->format('d-m-Y') . '-' . Str::random(10) . '.' . $ext;
          $request->file('image')->move(public_path("/img/"), $fileName);
  
          $user->avatar = 'img/' . $fileName ;
          $user->save() ;
-        
-        $user->profile->nom = $request->get('nom') ; 
-        $user->profile->prenom = $request->get('prenom') ; 
-        $user->profile->age = $request->get('age') ; 
-        $user->profile->sexe = $request->get('sexe') ; 
-        $user->profile->taille = $request->get('taille') ; 
-        $user->profile->poids = $request->get('poids') ; 
+         return response()->json([ 'success'  => $user    ], $this->successStatus);
+
+    }
+    public function profile(Request $request ){
+    // $user = User::find($id) ;
+    $user = User::with('profile')->find(Auth()->user()->id) ;
+    if( $request->get('name') !== 'undefined' ){
+        $user->name =$request->get('name') ;  
+    }
+      
+        $user->save() ;
+        foreach ($request->except('name') as $key => $value) {
+            if( $value !== 'undefined' ){
+                $user->profile->$key = $value;  
+            }
+        } 
         $user->profile->membre_date = date_format(date_create( $user->created_at ), "F d, Y ") ;
-        $user->profile->save()  ;
-  
+        $user->profile->save()  ; 
         return response()->json([ 'success'  => $user    ], $this->successStatus);
 
     }

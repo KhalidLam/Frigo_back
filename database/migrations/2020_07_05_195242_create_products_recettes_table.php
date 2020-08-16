@@ -45,3 +45,5 @@ class CreateProductsRecettesTable extends Migration
         Schema::dropIfExists('products_recettes');
     }
 }
+
+

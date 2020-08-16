@@ -98,7 +98,30 @@ class ListeController extends Controller
     }
 
 
-  
+    public function destroy(Request $request )
+    {  
+
+        $product_id =  $request->get('product_id'); 
+        $liste  = Liste::where('user_id',  Auth::user()->id )->get();
+        // return Auth::user()->id ;
+          if( $product_id ){ 
+         
+            // return $liste ;
+            foreach ($liste  as $item) { 
+                if ( $product_id == $item->product_id){ 
+                    $item->delete() ; 
+                }
+                // return $liste ;  
+            } 
+        }else{  
+            // return $liste ;
+          Liste::where('user_id',  Auth::user()->id )->delete();
+          $liste  = Liste::where('user_id',  Auth::user()->id )->get();
+            return $liste ; 
+           
+        }
+     
+    }
 }
 
 
