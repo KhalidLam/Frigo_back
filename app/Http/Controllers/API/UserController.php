@@ -25,11 +25,11 @@ class UserController extends Controller
             $user = Auth::user();
 
             $success['token'] =  $user->createToken('MyApp')->accessToken;
-
+            $success['name'] =  $user->name;
             // $frigo_id = Frigo::where('user_id', $user->id)->get()  ;
             //detail frigo 
             $frigo = $user->frigo;
-            return response()->json(['success' => [$frigo, $success]], $this->successStatus);
+            return response()->json(['success' => [$frigo, $success  ]], $this->successStatus);
         } else {
             return response()->json(['error' => 'Unauthorised'], 401);
         }
@@ -70,10 +70,7 @@ class UserController extends Controller
         //   dd($frigo);
         return response()->json(['success' => [$frigo,
         // $profile, 
-        $success]], $this->successStatus);
-
-
-
+        $success]], $this->successStatus); 
 
     }
     /** 

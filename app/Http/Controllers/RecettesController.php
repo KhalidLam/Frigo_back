@@ -36,7 +36,10 @@ class RecettesController extends Controller
            foreach ($comments as $comment) {
               $rating += $comment->rating  ; 
            }
-           $rating =  $rating /count( $comments) ;
+           if($rating >0){
+            $rating =  $rating/count( $comments) ;
+           }
+         
             array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name , 'rating' =>  $rating]);
      
         }
@@ -80,7 +83,9 @@ class RecettesController extends Controller
           foreach ($comments as $comment) {
              $rating += $comment->rating  ; 
           }
-          $rating =  $rating /count( $comments) ;
+          if($rating >0){
+            $rating =  $rating/count( $comments) ;
+           }
         array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name , 'rating' =>  $rating]);
      
     }
@@ -147,7 +152,7 @@ class RecettesController extends Controller
             $ProductDontExist = $FilterRecette[$i]['ProductDontExist'];
             $Recette_id = $FilterRecette[$i]['recette_id'];
 
-            if (count($ProductDontExist) <= 5) {
+            if (count($ProductDontExist) <= 4) {
                 for ($j = 0; $j < count($ProductDontExist); $j++) {
                     $product_id = $ProductDontExist[$j];
                     $product_name = Product::find($product_id)->name;
@@ -175,7 +180,9 @@ class RecettesController extends Controller
            foreach ($comments as $comment) {
               $rating += $comment->rating  ; 
            }
-           $rating =  $rating /count( $comments) ;
+           if($rating >0){
+            $rating =  $rating/count( $comments) ;
+           }
             array_push($RecipesFilter, [
                 'recette' => $Recette, 'userName' => $user->name, 'rating' =>  $rating ,
                 'ProductNameDontExist' =>  $recette['ProductNameDontExist']
@@ -310,6 +317,16 @@ class RecettesController extends Controller
         }
         return response()->json(['success' => $Recipes    ], 200);
     
+    }
+    
+
+    public function destroy($id )
+    { 
+        
+        $recette = Recette::findOrFail($id);
+        $recette->delete();
+
+        return 204;
     }
 }
 

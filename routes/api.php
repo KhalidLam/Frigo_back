@@ -26,11 +26,11 @@ Route::get('/user', function (Request $request) {
 Route::post('login', 'API\UserController@login');
 Route::post('register', 'API\UserController@register');
 
-    Route::group(['middleware' => 'auth:api'], function () {
+Route::group(['middleware' => 'auth:api'], function () {
     Route::get('details', 'API\UserController@details');
     Route::post('avatar', 'API\UserController@EditAvatar');
     Route::post('profile', 'API\UserController@profile');
-   
+
     //liste 
     Route::post('liste', 'ListeController@store');
     Route::get('liste/{user_id}', 'ListeController@index');
@@ -43,13 +43,13 @@ Route::post('register', 'API\UserController@register');
     Route::get('comment/edit/{id}', 'CommentController@edit');
     Route::put('comment/{id}', 'CommentController@update');
     Route::delete('comment/{id}', 'CommentController@destroy');
-//recette
+    //recette
     Route::get('recettes', 'RecettesController@index');
     Route::get('mesrecettes/{user_id}', 'RecettesController@myRecipes');
+    Route::delete('recette/{id}', 'RecettesController@destroy');
 
     Route::post('recette', 'RecettesController@store');
     Route::delete('recette/product/{id}', 'ProductController@destroy');
-
 });
 //get tt les produit et les poster
 Route::get('product', 'ProductController@index');
@@ -88,7 +88,7 @@ Route::get('recette/{id}', 'RecettesController@show');
 Route::put('recette/{id}', 'RecettesController@update');
 // Route::delete('recette/{id}', 'RecettesController@destroy');
 
- 
+
 // Route::get('products', 'ProductController@index');
 
 // Route::post('product','ProduitController@store');

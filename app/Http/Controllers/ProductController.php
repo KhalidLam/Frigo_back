@@ -76,15 +76,18 @@ class ProductController extends Controller
 
         if ($frigo->products->find($product_id) == null) {
             $frigo->products()->attach($product->id, ['quantity' =>  $qty_request, 'type' => $type]);
-        } else {
-
+        } elseif(   $qty_request  == 0){
+                $frigo = Frigo::findOrFail($frigo_id); 
+                $product =  Product::find($product_id); 
+                $frigo->products()->detach($product->id);
+            }else{
             $pivot = $frigo->products->find($product_id)->pivot;
 
             $pivot->quantity +=  $qty_request;
 
             $pivot->save();
         }
-
+ 
         return response()->json(['success' => [$frigo, $product]], 200);
     }
 
