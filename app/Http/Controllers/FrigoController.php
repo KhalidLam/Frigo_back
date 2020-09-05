@@ -72,7 +72,7 @@ class FrigoController extends Controller
                 case 6:
                     $image = 'http://localhost:1000/CategoryImage/Breads_cereals.png';
                     break;
-                case 24:
+                case 8:
                     $image = 'http://localhost:1000/CategoryImage/Oils.jpg';
                     break;
                 case 5:
