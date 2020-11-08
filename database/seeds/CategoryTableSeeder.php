@@ -15,34 +15,41 @@ class CategoryTableSeeder extends Seeder
         
         Category ::create([
 
-        'name' => 'Fruit and vegetables',
+        // 'name' => 'Fruit and vegetables',
+        'name' => 'Fruit et légumes',
       
     ]);
     Category::create([
-        'name' => 'Dairy products',
+        // 'name' => 'Dairy products',
+        'name' => 'Produit laitier',
     ]);
 
     Category::create([
-        'name' => 'Spices/Herbs',
+        // 'name' => 'Spices/Herbs',
+        'name' => 'Epices/Herbes',
+
     ]);
 
     Category::create([
-        'name' => 'Drinks',
+        'name' => 'Boisson',
     ]);
 
     Category::create([
-        'name' => 'Meat/Poultry/Fish/Eggs',
+        // 'name' => 'Meat/Poultry/Fish/Eggs',
+        'name' => 'Viande/Poisson/Oeuf',
+
     ]);
 
     Category::create([
-        'name' => 'Breads and cereals',
+        // 'name' => 'Breads and cereals',
+        'name' => 'Céréale et féculent ',
     ]);
 
     Category::create([
-        'name' => 'Sugar',
+        'name' => 'Sucre',
     ]);
     Category::create([
-        'name' => 'Oils',
+        'name' => 'Matière grasse',
     ]);
     
     }

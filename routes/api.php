@@ -52,8 +52,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::delete('recette/product/{id}', 'ProductController@destroy');
 });
 //get tt les produit et les poster
-Route::get('product', 'ProductController@index');
-
+Route::get('product', 'ProductController@index'); 
 Route::post('frigo/product', 'ProductController@storeProductsFrigo');
 Route::post('recette/product', 'ProductController@storeProductsRecette');
 
@@ -61,7 +60,7 @@ Route::post('recette/product', 'ProductController@storeProductsRecette');
 
 
 //tst
-Route::get('post', 'ProductController@post');
+Route::post('post', 'ProductController@post');
 
 // les produits du frigo 
 Route::get('frigo', 'FrigoController@index');

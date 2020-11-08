@@ -31,7 +31,7 @@ class ListeController extends Controller
     {     
         $frigo_id = $request->get('frigo_id');
         $frigo = Frigo::find($frigo_id);
-        $Liste= $request->get('product_id');
+        $Liste= $request->get('product_id'); 
         // return   $Liste ;
         foreach ($Liste as $item) {
             $product_id = $item['id'] ;

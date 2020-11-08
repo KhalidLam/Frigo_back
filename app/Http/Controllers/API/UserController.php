@@ -26,6 +26,9 @@ class UserController extends Controller
 
             $success['token'] =  $user->createToken('MyApp')->accessToken;
             $success['name'] =  $user->name;
+            $success['avatar'] =  $user->avatar;
+
+
             // $frigo_id = Frigo::where('user_id', $user->id)->get()  ;
             //detail frigo 
             $frigo = $user->frigo;
@@ -65,6 +68,8 @@ class UserController extends Controller
      
         $success['token'] =  $user->createToken('MyApp')->accessToken;
         $success['name'] =  $user->name;
+        $success['avatar'] =  $user->avatar;
+
         //    $Auth = Auth::user(); 
         $frigo =  $user->frigo;
         //   dd($frigo);

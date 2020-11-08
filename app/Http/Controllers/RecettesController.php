@@ -93,9 +93,8 @@ class RecettesController extends Controller
     }
     
     public function FilterRecette($frigo_id)
-    {
-
-        $Recettes = Recette::all();
+    { 
+         $Recettes = Recette::all();
         $TableRecettes = [];
 
         foreach ($Recettes as $Recette) {
@@ -152,7 +151,8 @@ class RecettesController extends Controller
             $ProductDontExist = $FilterRecette[$i]['ProductDontExist'];
             $Recette_id = $FilterRecette[$i]['recette_id'];
 
-            if (count($ProductDontExist) <= 4) {
+            if (count($ProductDontExist) <= 3) {
+                
                 for ($j = 0; $j < count($ProductDontExist); $j++) {
                     $product_id = $ProductDontExist[$j];
                     $product_name = Product::find($product_id)->name;
@@ -247,17 +247,14 @@ class RecettesController extends Controller
 
     public function store(Request $request)
     {
-
         $recette_name = $request->get('name');
         $description = $request->get('description');
         $number = $request->get('number');
         $time = $request->get('time');
         $category_id = $request->get('category_id');
         $user_id = $request->get('user_id');
-
-
         $category = Categoryrecette::findOrFail($category_id);
-
+        
         $file = $request->file('image');
         $ext = $file->extension();
         $fileName = Carbon::now()->format('d-m-Y') . '-' . Str::random(10) . '.' . $ext;
@@ -303,16 +300,33 @@ class RecettesController extends Controller
 
     public function search(Request $request)
     {
+          $RecipeProducts = [] ;
+          $recettes  = Recette::all();
+        // foreach ($recettes as $recette) {
+        //       $recette->products->all();
+        //     //   array_push( $RecipeProducts ,  $recette );
+        // }
+        
         $q = $request->get('word');
-        $Recettes = Recette::where('name', 'LIKE', '%' . $q . '%')
-            ->orWhere('description', 'LIKE', '%' . $q . '%')->get();
+        $Recettes =  Recette::whereHas('products',function($query) use ($q)
+        {
+            $query->where('name', 'LIKE', '%' . $q . '%') ;
+        } )->orWhere('name', 'LIKE', '%' . $q . '%')
+        ->orWhere('description', 'LIKE', '%' . $q . '%')->with('products')->get();
         $Recipes = [];
         foreach ($Recettes as $recette) {
             $user_id = $recette->user_id;
             $user = User::find($user_id);
-
+            $comments= Comment::where('recette_id' ,  $recette->id)->get() ;
+            $rating = 0 ;
+            foreach ($comments as $comment) {
+                $rating += $comment->rating  ; 
+            }
+           if($rating >0){
+            $rating =  $rating/count( $comments) ;
+           }
             // array_push($Recipes, ['id' => $recette->id, 'userName' => $user->name, 'recipeName' =>  $recette->name, 'person' => $recette->number_person, 'image' => $recette->image]);
-            array_push($Recipes, ['recette' =>$recette, 'userName' => $user->name]);
+            array_push($Recipes, ['recette' =>$recette,'userName' => $user->name, 'rating' =>  $rating ]);
      
         }
         return response()->json(['success' => $Recipes    ], 200);

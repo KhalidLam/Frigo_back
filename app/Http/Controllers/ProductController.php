@@ -19,26 +19,51 @@ class ProductController extends Controller
 
 
 
-    public function post()
+    public function post(Request $request)
     {
-        $products_name = [] ;
+        $frigo_id = $request->get('frigo_id');
+        $frigo = Frigo::find($frigo_id);
+        $Liste= $request->get('product_id'); 
+ 
+        foreach (  $Liste as $item) { 
+            $product_id = $item['id'] ; 
+            $qty_request =  $item['quantity'] ; 
 
-            $recette = Recette::findOrFail(18) ;
-          $recette_products =  $recette->products->all() ;
-          for ($i = 0; $i < count( $recette_products); $i++) {
-            $product_name = $recette_products[$i]->name;
-            $product_quantity =  $recette_products[$i]->pivot->quantity ; 
-            $product_type =  $recette_products[$i]->pivot->type ; 
+            if ($frigo->products->find($product_id) !== null) { 
 
-            array_push($products_name , ['name' =>  $product_name,  'quantity' =>  $product_quantity , 'type' => $product_type]);
+                $pivot = $frigo->products->find($product_id)->pivot;
+                if ($pivot->quantity ==  $qty_request) {
+                    $frigo->products()->detach($product_id);
+                } else {
+                    $pivot->quantity -=  $qty_request; 
+                    $pivot->save();
+                }
+            }
+  
         }
-            return $products_name  ;
-            // $product_id = $request->get('product_id');
-            // $product =  Product::find($product_id);
-    
-            // $frigo_id = $request->get('frigo_id');
-            // $frigo = Frigo::find($frigo_id);
-    
+        return 'okey' ;
+        
+      
+
+        $products_name = [];
+
+        $recette = Recette::findOrFail(18);
+        $recette_products =  $recette->products->all();
+        for ($i = 0; $i < count($recette_products); $i++) {
+            $product_name = $recette_products[$i]->name;
+            $product_quantity =  $recette_products[$i]->pivot->quantity;
+            $product_type =  $recette_products[$i]->pivot->type;
+
+            array_push($products_name, ['name' =>  $product_name,  'quantity' =>  $product_quantity, 'type' => $product_type]);
+        }
+        return $products_name;
+
+        // $product_id = $request->get('product_id');
+        // $product =  Product::find($product_id);
+
+        // $frigo_id = $request->get('frigo_id');
+        // $frigo = Frigo::find($frigo_id);
+
         //   dd( $frigo->products->find(2) ) ;
         // $product->frigos->find(5)->pivot->stock 
         // $frigo->products->first()->name ; /// tomate
@@ -55,7 +80,7 @@ class ProductController extends Controller
         // $frigo = Frigo::find(2);
         // dd($frigo->products->find(3));
         // $frigo->products()->first()->name ; /// tomate
-     
+
     }
 
 
@@ -68,41 +93,30 @@ class ProductController extends Controller
 
         $frigo_id = $request->get('frigo_id');
         $frigo = Frigo::find($frigo_id);
-
-        //  $stock =  $product->frigos()->first()->pivot->stock  ;
-
+ 
         $qty_request = $request->get('quantity');
         $type = $request->get('type');
 
         if ($frigo->products->find($product_id) == null) {
             $frigo->products()->attach($product->id, ['quantity' =>  $qty_request, 'type' => $type]);
-        } elseif(   $qty_request  == 0){
-                $frigo = Frigo::findOrFail($frigo_id); 
-                $product =  Product::find($product_id); 
-                $frigo->products()->detach($product->id);
-            }else{
+        } elseif ($qty_request  == 0) {
+            $frigo = Frigo::findOrFail($frigo_id);
+            $product =  Product::find($product_id);
+            $frigo->products()->detach($product->id);
+        } else {
             $pivot = $frigo->products->find($product_id)->pivot;
 
             $pivot->quantity +=  $qty_request;
 
             $pivot->save();
         }
- 
+
         return response()->json(['success' => [$frigo, $product]], 200);
     }
 
 
 
-
-    // $frigo = Frigo::create($request->all()) ;
-    // $frigo = new Frigo() ;
-    // $frigo->products()->attach($request);
-    // auth()->user()->frigos()->create([
-    //     // 'name' => $request 
-    // ]) ;
-    // $frigo->save();
-    // return ($frigo);
-    // }
+ 
     public function storeProductsRecette(Request $request)
     {
 
@@ -117,7 +131,7 @@ class ProductController extends Controller
         $qty_request = $request->get('quantity');
         $type = $request->get('type');
 
-        if (  $recette->products->find($product_id) == null) {
+        if ($recette->products->find($product_id) == null) {
             $recette->products()->attach($product->id, ['quantity' =>  $qty_request, 'type' => $type]);
         } else {
 
@@ -129,7 +143,6 @@ class ProductController extends Controller
         }
 
         return response()->json(['success' => [$recette, $product]], 200);
-
     }
 
 
@@ -143,7 +156,7 @@ class ProductController extends Controller
     }
 
 
-    
+
     public function destroy(Request $request, $id)
     {
         $recette_id = $request->get('recette_id');
